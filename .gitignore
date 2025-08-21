@@ -1,0 +1,37 @@
+# Model and data files
+/data/
+/outputs/
+/checkpoints/
+/runs/
+*.ckpt
+*.safetensors
+*.pt
+*.pth
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment files
+.env
+.env.local
+
+# Cache directories (use shared cache instead)
+/models/
+/cache/
+__pycache__/
+*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+*.tmp
+*.temp
+*.log

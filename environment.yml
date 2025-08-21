@@ -1,0 +1,32 @@
+name: t2i-lab
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pytorch>=2.0
+  - torchvision
+  - pytorch-cuda=12.1
+  - pip
+  - pip:
+      - diffusers[torch]>=0.30.0
+      - transformers>=4.42
+      - accelerate>=0.33
+      - xformers
+      - bitsandbytes
+      - peft
+      - datasets
+      - safetensors
+      - compel
+      - opencv-python
+      - pillow
+      - matplotlib
+      - numpy
+      - jupyter
+      - ipywidgets
+      - nbstripout
+      - pytest
+      - pyyaml
+      - tqdm
