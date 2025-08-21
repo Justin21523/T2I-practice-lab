@@ -1,0 +1,59 @@
+# configs/pipe/sd_quickstart.yaml
+# SD Quickstart 配置檔案
+
+inference:
+  sd15:
+    model_id: "runwayml/stable-diffusion-v1-5"
+    scheduler: "DPMSolverMultistep"
+    scheduler_config:
+      use_karras_sigmas: true
+      algorithm_type: "dpmsolver++"
+
+    default_params:
+      width: 512
+      height: 512
+      num_inference_steps: 20
+      guidance_scale: 7.5
+
+    memory_optimizations:
+      enable_attention_slicing: true
+      enable_vae_slicing: true
+      enable_xformers: true
+
+  sdxl:
+    model_id: "stabilityai/stable-diffusion-xl-base-1.0"
+    scheduler: "EulerAncestral"
+
+    default_params:
+      width: 1024
+      height: 1024
+      num_inference_steps: 20
+      guidance_scale: 5.0
+
+    memory_optimizations:
+      enable_attention_slicing: true
+      enable_vae_slicing: true
+      enable_xformers: true
+      enable_cpu_offload_threshold_gb: 10 # Enable if VRAM < 10GB
+
+parameter_exploration:
+  sd15:
+    steps: [10, 15, 20, 28]
+    cfg_scales: [3.5, 5.0, 7.5, 10.0]
+
+  sdxl:
+    steps: [10, 15, 20, 25]
+    cfg_scales: [3.5, 5.0, 7.5, 9.0]
+
+smoke_test:
+  enabled: true
+  params:
+    width: 256
+    height: 256
+    num_inference_steps: 2
+    guidance_scale: 5.0
+
+test_prompts:
+  basic: "a serene mountain landscape with a crystal clear lake, golden hour lighting, photorealistic, highly detailed"
+  exploration: "a majestic castle on a hill at sunset, detailed architecture, warm lighting"
+  negative: "blurry, low quality, distorted, ugly, bad anatomy, watermark"

@@ -1,0 +1,62 @@
+# .github/workflows/test-sd-quickstart.yml
+name: Test SD Quickstart Notebook
+
+on:
+  push:
+    paths:
+      - "notebooks/t2i/10_sd/nb-sd-quickstart.ipynb"
+      - "scripts/test_sd_quickstart.py"
+      - ".github/workflows/test-sd-quickstart.yml"
+  pull_request:
+    paths:
+      - "notebooks/t2i/10_sd/**"
+
+jobs:
+  test-notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+
+      - name: Install dependencies
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install diffusers[torch] transformers accelerate safetensors
+          pip install matplotlib pillow numpy
+
+      - name: Set environment variables
+        run: |
+          echo "SMOKE_MODE=true" >> $GITHUB_ENV
+          echo "AI_CACHE_ROOT=/tmp/ai_cache" >> $GITHUB_ENV
+
+      - name: Run smoke test
+        run: python scripts/test_sd_quickstart.py
+
+      - name: Test notebook import
+        run: |
+          python -c "
+          import sys, os
+          os.environ['SMOKE_MODE'] = 'true'
+
+          # Test notebook can be imported
+          import nbformat
+          from pathlib import Path
+
+          nb_path = Path('notebooks/t2i/10_sd/nb-sd-quickstart.ipynb')
+          if nb_path.exists():
+              nb = nbformat.read(nb_path, as_version=4)
+              print(f'✅ Notebook loaded: {len(nb.cells)} cells')
+          else:
+              print('⚠️  Notebook file not found')
+          "
