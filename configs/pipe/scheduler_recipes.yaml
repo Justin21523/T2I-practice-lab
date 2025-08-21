@@ -1,0 +1,179 @@
+# configs/pipe/scheduler_recipes.yaml
+# SD Scheduler/CFG Parameter Recipes
+# Generated from nb-sd-samplers-cfg.ipynb experiments
+
+# =============================================================================
+# SD1.5 Optimal Configurations
+# =============================================================================
+
+sd15_recipes:
+  # Speed-optimized (VRAM friendly)
+  fast:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 15
+    guidance_scale: 7.5
+    use_case: "Real-time generation, low VRAM (4-6GB)"
+    expected_time: "~8-12s on RTX 3060"
+
+  # Balanced quality/speed
+  balanced:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 25
+    guidance_scale: 7.5
+    use_case: "General purpose, interactive use"
+    expected_time: "~15-20s on RTX 3060"
+
+  # High quality
+  high_quality:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 50
+    guidance_scale: 7.5
+    use_case: "Final outputs, batch generation"
+    expected_time: "~30-40s on RTX 3060"
+
+  # Artistic/stylized
+  artistic:
+    scheduler: "EulerAncestral"
+    num_inference_steps: 30
+    guidance_scale: 8.5
+    use_case: "Creative/artistic styles, higher variation"
+    expected_time: "~20-25s on RTX 3060"
+
+# =============================================================================
+# SDXL Configurations (typically need different params)
+# =============================================================================
+
+sdxl_recipes:
+  fast:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 20
+    guidance_scale: 6.0
+    use_case: "SDXL speed-optimized (8GB+ VRAM)"
+
+  balanced:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 30
+    guidance_scale: 7.0
+    use_case: "SDXL general purpose"
+
+  high_quality:
+    scheduler: "DPMSolverMultistep"
+    num_inference_steps: 50
+    guidance_scale: 7.0
+    use_case: "SDXL production quality"
+
+# =============================================================================
+# Scheduler Characteristics Reference
+# =============================================================================
+
+scheduler_profiles:
+  DPMSolverMultistep:
+    strengths: ["Fast convergence", "Good quality", "Stable"]
+    weaknesses: ["Less creative variation"]
+    optimal_steps: [15, 25, 50]
+    optimal_cfg: [6.0, 8.0]
+
+  EulerDiscrete:
+    strengths: ["Very fast", "Deterministic"]
+    weaknesses: ["May need more steps for quality"]
+    optimal_steps: [20, 30, 50]
+    optimal_cfg: [7.0, 9.0]
+
+  EulerAncestral:
+    strengths: ["Creative variation", "Good for artistic styles"]
+    weaknesses: ["Non-deterministic", "Slower"]
+    optimal_steps: [25, 35, 50]
+    optimal_cfg: [7.5, 10.0]
+
+  DDIM:
+    strengths: ["Stable", "Predictable"]
+    weaknesses: ["Slower than DPM solvers"]
+    optimal_steps: [30, 50, 100]
+    optimal_cfg: [7.0, 8.5]
+
+  UniPCMultistep:
+    strengths: ["Very fast", "Good quality at low steps"]
+    weaknesses: ["Newer, less tested"]
+    optimal_steps: [10, 20, 30]
+    optimal_cfg: [6.5, 8.0]
+
+# =============================================================================
+# CFG Scale Guidelines
+# =============================================================================
+
+cfg_guidelines:
+  low_guidance:
+    range: [3.5, 5.0]
+    effect: "Subtle, natural-looking, may drift from prompt"
+    use_case: "Photorealistic, subtle styles"
+
+  balanced_guidance:
+    range: [6.0, 8.0]
+    effect: "Good prompt adherence, balanced"
+    use_case: "General purpose, most styles"
+
+  strong_guidance:
+    range: [8.5, 12.0]
+    effect: "Strong prompt following, may oversaturate"
+    use_case: "Complex prompts, specific styles"
+
+  extreme_guidance:
+    range: [12.0, 20.0]
+    effect: "Very strong adherence, artifact risk"
+    use_case: "Debug/testing only, not production"
+
+# =============================================================================
+# Memory Optimization Settings
+# =============================================================================
+
+memory_optimization:
+  # 4-6GB VRAM
+  low_vram:
+    attention_slicing: true
+    cpu_offload: true
+    enable_vae_slicing: true
+    max_batch_size: 1
+    recommended_resolution: 512
+
+  # 8-12GB VRAM
+  medium_vram:
+    attention_slicing: true
+    cpu_offload: false
+    enable_vae_slicing: false
+    max_batch_size: 2
+    recommended_resolution: 768
+
+  # 16GB+ VRAM
+  high_vram:
+    attention_slicing: false
+    cpu_offload: false
+    enable_vae_slicing: false
+    max_batch_size: 4
+    recommended_resolution: 1024
+
+# =============================================================================
+# Batch Generation Templates
+# =============================================================================
+
+batch_templates:
+  exploration:
+    # For testing multiple prompts/styles
+    scheduler: "DPMSolverMultistep"
+    steps: 20
+    cfg: 7.5
+    batch_size: 4
+
+  production:
+    # For final generation
+    scheduler: "DPMSolverMultistep"
+    steps: 30
+    cfg: 7.5
+    batch_size: 1
+
+  training_data:
+    # For generating training datasets
+    scheduler: "EulerAncestral"
+    steps: 25
+    cfg: 8.0
+    batch_size: 2
+    variation_seeds: true
